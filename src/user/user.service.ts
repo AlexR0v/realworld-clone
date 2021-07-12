@@ -13,6 +13,10 @@ export class UserService {
   constructor(@InjectRepository(UserEntity) private readonly userRepo: Repository<UserEntity>) {
   }
 
+  async findAll(): Promise<UserEntity[]> {
+    return await this.userRepo.find()
+  }
+
   async createUser(user: CreateUserDto): Promise<UserEntity> {
     const existsUserEmail = await this.userRepo.findOne({
       email: user.email
@@ -41,6 +45,10 @@ export class UserService {
     }
     delete user.password
     return user
+  }
+
+  findById(id: number): Promise<UserEntity> {
+    return this.userRepo.findOne(id)
   }
 
   generateJWT(user: UserEntity) {
