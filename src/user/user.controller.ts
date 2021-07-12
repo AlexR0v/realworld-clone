@@ -1,10 +1,19 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post, UsePipes, ValidationPipe } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  UsePipes,
+  ValidationPipe
+} from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UserResponseInterface } from './types/userResponse.interface'
 import { LoginUserDto } from './dto/login-user.dto'
 import { UserEntity } from './user.entity'
 import { UserDecorator } from './decorators/user.decorator'
+import { AuthGuard } from './guards/auth.guard'
 
 @Controller()
 export class UserController {
@@ -31,13 +40,10 @@ export class UserController {
   }
 
   @Get('user')
+  @UseGuards(AuthGuard)
   async currentUser(
     @UserDecorator() user: UserEntity,
-    @UserDecorator('id') currentUserId: number
   ): Promise<UserResponseInterface> {
-    if (!currentUserId){
-      throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED)
-    }
     return this.userService.buildUserResponse(user)
   }
 }
